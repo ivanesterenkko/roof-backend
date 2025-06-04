@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:15
+    container_name: roof_db
+    hostname: roof_db
+    env_file:
+      - ../src/.env
+    volumes:
+      - psql_roof_data:/var/lib/postgresql/data
+    ports:
+      - 5438:5432
+
+  roof_api:
+    image: roof_image
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    env_file:
+      - ../src/.env
+    container_name: roof_api
+    hostname: roof_api
+    depends_on:
+      db:
+        condition: service_started
+    command: sh -c "sleep 2 &&
+             alembic -c src/alembic.ini upgrade head &&
+             alembic -c src/alembic.ini stamp head &&
+             python src/main.py"
+    ports:
+      - 8001:8001
+
+volumes:
+  psql_roof_data: {}
+
+networks:
+  roof:
+    driver: bridge
