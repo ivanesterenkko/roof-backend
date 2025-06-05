@@ -73,8 +73,8 @@ docker-compose -f docker/docker-compose-prod.yml down
 ## ✅ Миграции Alembic
 
 ```bash
-alembic revision --autogenerate -m "init"
-alembic upgrade head
+alembic -c src/alembic.ini revision --autogenerate -m "init"
+alembic -c src/alembic.ini upgrade head
 ```
 
 ## 🧪 Запуск тестов
